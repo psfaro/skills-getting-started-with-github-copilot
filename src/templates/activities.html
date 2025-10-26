@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mergington High School Activities</title>
+    <style>
+        .activity-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .activity-title {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .activity-info {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .participants-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .participants-title {
+            font-weight: bold;
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        .participants-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .participants-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #bde4ff;
+        }
+        .participants-list li:before {
+            content: "👤 ";
+            margin-right: 8px;
+        }
+        .participants-count {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .signup-button {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .signup-button:hover {
+            background-color: #219a52;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mergington High School Extracurricular Activities</h1>
+    
+    {% for activity_name, activity in activities.items() %}
+    <div class="activity-card">
+        <h2 class="activity-title">{{ activity_name }}</h2>
+        <div class="activity-info">
+            <p><strong>Description:</strong> {{ activity.description }}</p>
+            <p><strong>Schedule:</strong> {{ activity.schedule }}</p>
+            <p><strong>Max Participants:</strong> {{ activity.max_participants }}</p>
+        </div>
+        
+        <div class="participants-section">
+            <div class="participants-title">Current Participants</div>
+            {% if activity.participants %}
+                <div class="participants-count">
+                    {{ activity.participants|length }} of {{ activity.max_participants }} spots filled
+                </div>
+                <ul class="participants-list">
+                    {% for participant_email in activity.participants %}
+                        <li>{{ students.get(participant_email, {}).get('name', participant_email) }} 
+                            <span class="participants-count">(Grade {{ students.get(participant_email, {}).get('grade', 'N/A') }})</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="participants-count">No participants yet - be the first to sign up!</div>
+            {% endif %}
+        </div>
+        
+        <button class="signup-button" onclick="signUp('{{ activity_name }}')">Sign Up</button>
+    </div>
+    {% endfor %}
+
+    <script>
+        function signUp(activityName) {
+            const email = prompt("Enter your email:");
+            if (email) {
+                fetch(`/activities/${activityName}/signup?email=${email}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Signup successful!');
+                    location.reload();
+                })
+                .catch(error => {
+                    alert('Error signing up: ' + error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
