@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Delete Functionality</title>
+</head>
+<body>
+    <h1>Testing Delete Functionality</h1>
+    
+    <script>
+        // Test the unregister endpoint
+        async function testUnregister() {
+            try {
+                // First, let's test signing up a user
+                const signupResponse = await fetch('/activities/Chess%20Club/signup?email=test@mergington.edu', {
+                    method: 'POST'
+                });
+                const signupResult = await signupResponse.json();
+                console.log('Signup result:', signupResult);
+                
+                // Then test unregistering the same user
+                const unregisterResponse = await fetch('/activities/Chess%20Club/unregister?email=test@mergington.edu', {
+                    method: 'DELETE'
+                });
+                const unregisterResult = await unregisterResponse.json();
+                console.log('Unregister result:', unregisterResult);
+                
+                // Get activities to verify the change
+                const activitiesResponse = await fetch('/activities');
+                const activities = await activitiesResponse.json();
+                console.log('Chess Club participants:', activities['Chess Club'].participants);
+                
+            } catch (error) {
+                console.error('Test error:', error);
+            }
+        }
+        
+        // Run the test
+        testUnregister();
+    </script>
+</body>
+</html>
